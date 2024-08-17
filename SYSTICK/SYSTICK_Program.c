@@ -34,9 +34,9 @@ void SYSTICK_delayMilliSec(u32 ms)
 void SYSTICK_delayMicroSec(u32 us)
 {
 #if SYSTICK_CLK_SRC == SYSTICK_AHB_DIV1
-	SYSTICK->LOAD = SYSTEM_CLK * us*1000 -1;
+	SYSTICK->LOAD = SYSTEM_CLK * us -1;
 #elif SYSTICK_CLK_SRC == SYSTICK_AHB_DIV8
-	SYSTICK->LOAD = SYSTEM_CLK/8 * us*1000 -1;
+	SYSTICK->LOAD = SYSTEM_CLK/8 * us -1;
 #endif
 
 	SYSTICK->CTRL |=(1<<0);//enable counter
@@ -44,11 +44,11 @@ void SYSTICK_delayMicroSec(u32 us)
 	SYSTICK->CTRL &=~(1<<0);//stop counter
 }
 
-void SYSTICK_getRemainingTime(void)
+u32 SYSTICK_getRemainingTime(void)
 {
 	return SYSTICK->VAL;
 }
-void SYSTICK_getElapsedTime(void)
+u32 SYSTICK_getElapsedTime(void)
 {
 	return ((SYSTICK->LOAD)-(SYSTICK->VAL));
 }
@@ -63,7 +63,13 @@ void (*SYSTICK_CallBack)(void);
 void SYSTICK_StartCountMilliSecIT(u32 ms,void(*ptr)(void)){
 
 	    SYSTICK_CallBack= ptr;
-	    SYSTICK_delayMicroSec(ms+1);
+#if SYSTICK_CLK_SRC == SYSTICK_AHB_DIV1
+	SYSTICK->LOAD = SYSTEM_CLK * ms*1000 ;
+#elif SYSTICK_CLK_SRC == SYSTICK_AHB_DIV8
+	SYSTICK->LOAD = SYSTEM_CLK/8 * ms*1000;
+#endif
+
+	SYSTICK->CTRL |=(1<<0);//enable counter
 	    SYSTICK_EnableInterrupt();
 
 
@@ -71,7 +77,13 @@ void SYSTICK_StartCountMilliSecIT(u32 ms,void(*ptr)(void)){
 void SYSTICK_StartCountMicroSecIT(u32 us,void(*ptr)(void))
 {
 	SYSTICK_CallBack= ptr;
-	SYSTICK_delayMicroSec(us+1);
+#if SYSTICK_CLK_SRC == SYSTICK_AHB_DIV1
+	SYSTICK->LOAD = SYSTEM_CLK * us;
+#elif SYSTICK_CLK_SRC == SYSTICK_AHB_DIV8
+	SYSTICK->LOAD = SYSTEM_CLK/8 * us;
+#endif
+
+	SYSTICK->CTRL |=(1<<0);//enable counter
 	SYSTICK_EnableInterrupt();
 
 }

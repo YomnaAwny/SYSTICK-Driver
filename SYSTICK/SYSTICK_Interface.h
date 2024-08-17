@@ -19,8 +19,8 @@ void SYSTICK_Init(void);
 void SYSTICK_delayMilliSec(u32 ms);
 void SYSTICK_delayMicroSec(u32 us);
 
-void SYSTICK_getRemainingTime(void);
-void SYSTICK_getElapsedTime(void);
+u32 SYSTICK_getRemainingTime(void);
+u32 SYSTICK_getElapsedTime(void);
 
 void SYSTICK_EnableInterrupt(void);
 
